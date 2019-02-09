@@ -1,0 +1,26 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "Backend to social torah",
+  "main": "index.js",
+  "scripts": {
+    "test": "test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "socialTorahBack"
+  },
+  "keywords": [
+    "socialTorah"
+  ],
+  "author": "Jon Cohen",
+  "license": "ISC",
+  "dependencies": {
+    "bcrypt": "^3.0.4",
+    "express": "^4.16.4",
+    "mongoose": "^5.4.9"
+  },
+  "scripts": {
+    "start": "node app.js"
+  }
+}
