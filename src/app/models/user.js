@@ -8,24 +8,15 @@ const userSchema = new mongoose.Schema({
     unique: true,
     required: true
   },
-  token: {
+  password: {
     type: String,
+    unique: true,
     required: true
   },
-  passwordDigest: String
-}, {
-  timestamps: true,
-  toJSON: {
-    virtuals: true,
-    transform: function (doc, pojoUser) {
-      // remove sensitive data from every user document
-      delete pojoUser.token;
-      delete pojoUser.passwordDigest;
-      return pojoUser;
-    }
-  },
-  toObject: {
-    virtuals: true
+  name: {
+    type: String,
+    unique: true,
+    required: true
   }
 });
 

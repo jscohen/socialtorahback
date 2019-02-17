@@ -4,7 +4,7 @@
   "description": "Backend to social torah",
   "main": "index.js",
   "scripts": {
-    "test": "test"
+    "start": "node app.js"
   },
   "repository": {
     "type": "git",
@@ -18,9 +18,7 @@
   "dependencies": {
     "bcrypt": "^3.0.4",
     "express": "^4.16.4",
+    "express-generator": "^4.16.0",
     "mongoose": "^5.4.9"
-  },
-  "scripts": {
-    "start": "node app.js"
   }
 }
