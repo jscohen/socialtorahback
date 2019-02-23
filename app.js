@@ -14,11 +14,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.post('/signUp', (req, res) => {
-  console.log(req.body);
-  res.send('POST Request for Signup');
-});
-
 app.use('/user', userRoute);
 
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
