@@ -28,12 +28,26 @@ router.post('/signUp', (req, res) => {
           if (user === null) {
             new User(userToSave).save();
           }
-          userToSend = {'email': userToSave.email, 'token': userToSave.token}
+          userToSend = {'email': userToSave.email,
+            'token': userToSave.token, 'id': userToSave._id}
         user ? res.send('User Already exists') : res.send(userToSend)
         })
             .catch((err) => res.send('500'))
       })
       .catch((err) => res.send('500'));
+});
+
+router.delete('/signOut', (req, res) => {
+  getToken().then((token) =>
+    User.findOneAndUpdate({
+      _id: req.params.id,
+      token: req.user.token
+    }, {
+      token
+    })
+  ).then((user) =>
+    user ? res.sendStatus(204) : next()
+  ).catch(next)
 });
 
 module.exports = router;
