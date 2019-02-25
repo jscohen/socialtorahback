@@ -40,14 +40,13 @@ router.post('/signUp', (req, res) => {
 router.delete('/signOut', (req, res) => {
   getToken().then((token) =>
     User.findOneAndUpdate({
-      _id: req.params.id,
-      token: req.user.token
+      token: req.body.token
     }, {
       token
     })
   ).then((user) =>
-    user ? res.sendStatus(204) : next()
-  ).catch(next)
+    user ? res.sendStatus(204) : res.sendStatus('500')
+  ).catch((err) => res.send('500'))
 });
 
 module.exports = router;
