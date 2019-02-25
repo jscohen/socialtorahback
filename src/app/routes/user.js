@@ -15,7 +15,11 @@ router.post('/signUp', (req, res) => {
       new User(userToSave).save();
     }
   })
-      .then(() => res.send(userToSave))
+      .then((user) => {
+        user !== null ? res.send('User Already exists').
+            json({'message': 'User Already exists'}) : ''
+      })
+      .then((user) => user === null ? res.send('200') : '')
       .catch((err) => res.send('500'));
 });
 
