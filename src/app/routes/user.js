@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const router = express.Router();
 const User = require('../models/user');
 const crypto = require('crypto');
+const bcrypt = require('bcrypt');
 
 const getToken = () =>
   new Promise((resolve, reject) =>
@@ -12,6 +13,13 @@ const getToken = () =>
     )
   )
 
+const encryptPassword = (password) => {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  return hash;
+}
+
+
 router.get('/test', (req, res) => {
   console.log('On Test');
 });
@@ -19,6 +27,12 @@ router.get('/test', (req, res) => {
 router.post('/signUp', (req, res) => {
   const userToSave = req.body;
   let userToSend = {};
+
+  const pwToSave = encryptPassword(userToSave.password);
+
+  userToSave.password = pwToSave;
+  console.log(pwToSave);
+
   getToken()
       .then((token) => {
         userToSave.token = token

@@ -1,6 +1,6 @@
-// const bcrypt = require('bcrypt');
+const bcrypt = require('bcrypt');
 const mongoose = require('mongoose');
-// const uniqueValidator = require('mongoose-unique-validator');
+const uniqueValidator = require('mongoose-unique-validator');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -19,22 +19,23 @@ const userSchema = new mongoose.Schema({
   }
 });
 
+userSchema.methods.encryptPassword = (password) => {
+  const salt = bcrypt.genSaltSync(10);
+  const hash = bcrypt.hashSync(password, salt);
+  return hash;
+}
+
 // userSchema.plugin(uniqueValidator);
 //
-// userSchema.methods.comparePassword = function (password) {
-//   const _this = this;
+userSchema.methods.comparePassword = function(password) {
+  return bcrypt.compareSync(password, hash); // true
+};
 //
-//   return new Promise((resolve, reject) =>
-//     bcrypt.compare(password, _this.passwordDigest, (err, data) =>
-//         err ? reject(err) : data ? resolve(data) : reject(new Error('Not Authorized')))
-//     ).then(() => _this);
-// };
-//
-// userSchema.virtual('password').set(function (password) {
+// userSchema.virtual('password').set(function(password) {
 //   this._password = password;
 // });
 //
-// userSchema.pre('save', function (next) {
+// userSchema.pre('save', function(next) {
 //   const _this = this;
 //
 //   if (!_this._password) {
@@ -56,21 +57,21 @@ const userSchema = new mongoose.Schema({
 //   });
 // });
 //
-// userSchema.methods.setPassword = function (password) {
-//   const _this = this;
-//
-//   return new Promise((resolve, reject) =>
-//     bcrypt.genSalt(null, (err, salt) =>
-//         err ? reject(err) : resolve(salt))
-//   ).then((salt) =>
-//     new Promise((resolve, reject) =>
-//       bcrypt.hash(password, salt, (err, data) =>
-//         err ? reject(err) : resolve(data)))
-//   ).then((digest) => {
-//     _this.passwordDigest = digest;
-//     return _this.save();
-//   });
-// };
+userSchema.methods.setPassword = function(password) {
+  const _this = this;
+
+  return new Promise((resolve, reject) =>
+    bcrypt.genSalt(null, (err, salt) =>
+        err ? reject(err) : resolve(salt))
+  ).then((salt) =>
+    new Promise((resolve, reject) =>
+      bcrypt.hash(password, salt, (err, data) =>
+        err ? reject(err) : resolve(data)))
+  ).then((digest) => {
+    _this.passwordDigest = digest;
+    return _this.save();
+  });
+};
 
 const User = mongoose.model('User', userSchema);
 

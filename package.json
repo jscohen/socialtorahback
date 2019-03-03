@@ -22,6 +22,7 @@
     "express": "^4.16.4",
     "express-generator": "^4.16.0",
     "mongoose": "^5.4.9",
+    "mongoose-unique-validator": "^2.0.2",
     "nodemon": "^1.18.10"
   },
   "devDependencies": {
