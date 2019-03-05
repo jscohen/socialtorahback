@@ -40,11 +40,14 @@ router.post('/signUp', (req, res) => {
       .then(() => {
         User.findOne({email: req.body.email}).then((user) => {
           if (user === null) {
-            new User(userToSave).save();
+            new User(userToSave).save().then((user) => {
+              userToSend = {'email': userToSave.email,
+                'token': userToSave.token, 'id': user._id}
+              res.send(userToSend);
+            }).catch((err) => res.send('500'));
+          } else {
+            res.send('User Already exists')
           }
-          userToSend = {'email': userToSave.email,
-            'token': userToSave.token, 'id': userToSave._id}
-        user ? res.send('User Already exists') : res.send(userToSend)
         })
             .catch((err) => res.send('500'))
       })
@@ -52,9 +55,11 @@ router.post('/signUp', (req, res) => {
 });
 
 router.delete('/signOut', (req, res) => {
+  console.log(req.query);
   getToken().then((token) =>
     User.findOneAndUpdate({
-      token: req.body.token
+      _id: req.query.id,
+      token: req.query.token
     }, {
       token
     })
