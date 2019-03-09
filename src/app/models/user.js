@@ -19,16 +19,10 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.methods.encryptPassword = (password) => {
-  const salt = bcrypt.genSaltSync(10);
-  const hash = bcrypt.hashSync(password, salt);
-  return hash;
-}
-
 // userSchema.plugin(uniqueValidator);
 //
-userSchema.methods.comparePassword = function(password) {
-  return bcrypt.compareSync(password, hash); // true
+userSchema.methods.comparePassword = function(password, hash) {
+  return bcrypt.compareSync(password, hash);
 };
 //
 // userSchema.virtual('password').set(function(password) {

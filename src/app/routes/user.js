@@ -1,7 +1,5 @@
 const express = require('express');
 const app = express();
-const mongoose = require('mongoose');
-const router = express.Router();
 const User = require('../models/user');
 const crypto = require('crypto');
 const bcrypt = require('bcrypt');
@@ -19,12 +17,11 @@ const encryptPassword = (password) => {
   return hash;
 }
 
-
-router.get('/test', (req, res) => {
+app.get('/test', (req, res) => {
   console.log('On Test');
 });
 
-router.post('/signUp', (req, res) => {
+app.post('/signUp', (req, res) => {
   const userToSave = req.body;
   let userToSend = {};
 
@@ -54,7 +51,36 @@ router.post('/signUp', (req, res) => {
       .catch((err) => res.send('500'));
 });
 
-router.delete('/signOut', (req, res) => {
+app.post('/signIn', (req, res) => {
+  const userSent = req.body;
+  const userToSend = {};
+  const encrypted = encryptPassword(userSent.password);
+  console.log(encrypted);
+
+  User.findOne({email: userSent.email})
+      .then((user) => {
+        if (user === null) {
+          res.send('You must create an account before you can sign in')
+        } else if (!user.comparePassword(userSent.password, user.password)) {
+          console.log(user)
+          res.send('Invalid username or password')
+        } else {
+          userToSend.id = user._id;
+          userToSend.email = user.email;
+          getToken().then((token) => {
+            user.token = token
+            console.log(user)
+            return user.save()
+          })
+
+          userToSend.token = user.token;
+          res.send(userToSend);
+        }
+      })
+      .catch((err) => res.send(err));
+})
+
+app.delete('/signOut', (req, res) => {
   console.log(req.query);
   getToken().then((token) =>
     User.findOneAndUpdate({
@@ -68,4 +94,4 @@ router.delete('/signOut', (req, res) => {
   ).catch((err) => res.send('500'))
 });
 
-module.exports = router;
+module.exports = app;
