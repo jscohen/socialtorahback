@@ -19,7 +19,7 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-userSchema.pre(save, function(next) {
+userSchema.pre('save', function(next) {
   const user = this;
 
   // only hash the password if it has been modified (or is new)
@@ -42,24 +42,9 @@ userSchema.pre(save, function(next) {
 
 userSchema.methods.comparePassword = function(candidatePassword, cb) {
   bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) return cb(err);
-    cb(null, isMatch);
-  });
-};
+    if (err) return (err);
 
-userSchema.methods.setPassword = function(password) {
-  const _this = this;
-
-  return new Promise((resolve, reject) =>
-    bcrypt.genSalt(null, (err, salt) =>
-        err ? reject(err) : resolve(salt))
-  ).then((salt) =>
-    new Promise((resolve, reject) =>
-      bcrypt.hash(password, salt, (err, data) =>
-        err ? reject(err) : resolve(data)))
-  ).then((digest) => {
-    _this.passwordDigest = digest;
-    return _this.save();
+    return isMatch;
   });
 };
 

@@ -25,11 +25,6 @@ app.post('/signUp', (req, res) => {
   const userToSave = req.body;
   let userToSend = {};
 
-  const pwToSave = encryptPassword(userToSave.password);
-
-  userToSave.password = pwToSave;
-  console.log(pwToSave);
-
   getToken()
       .then((token) => {
         userToSave.token = token
@@ -53,35 +48,24 @@ app.post('/signUp', (req, res) => {
 
 app.post('/signIn', (req, res) => {
   const userSent = req.body;
-  const userToSend = {};
-  const encrypted = encryptPassword(userSent.password);
-  console.log(encrypted);
 
   User.findOne({email: userSent.email})
       .then((user) => {
-        if (user === null) {
-          res.send('You must create an account before you can sign in')
-        } else if (!user.comparePassword(userSent.password, user.password)) {
-          console.log(user)
-          res.send('Invalid username or password')
-        } else {
-          userToSend.id = user._id;
-          userToSend.email = user.email;
-          getToken().then((token) => {
-            user.token = token
-            console.log(user)
-            return user.save()
-          })
-
-          userToSend.token = user.token;
-          res.send(userToSend);
-        }
+        !user ? res.send('Invalid username or password, or this user doesn\'t exist') : ''
+        user ? user.comparePassword(userSent.password)
+              : Promise.reject(new HttpError(404))
+        getToken().then((token) => {
+          user.token = token
+          return user.save()
+        })
+        user = user.toObject()
+        delete user.password
+        res.json(user)
       })
-      .catch((err) => res.send(err));
-})
+      .catch((err) => res.send(err))
+});
 
 app.delete('/signOut', (req, res) => {
-  console.log(req.query);
   getToken().then((token) =>
     User.findOneAndUpdate({
       _id: req.query.id,
