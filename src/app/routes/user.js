@@ -65,6 +65,12 @@ app.post('/signIn', (req, res) => {
       .catch((err) => res.send(err))
 });
 
+app.patch('/changePW', (req, res) => {
+  User.findOneAndUpdate({email: req.body.email}, {password: req.body.password})
+      .then(() => res.send('Password Updated Successfully'))
+      .catch((err) => res.send(err))
+})
+
 app.delete('/signOut', (req, res) => {
   getToken().then((token) =>
     User.findOneAndUpdate({
