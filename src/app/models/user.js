@@ -6,17 +6,17 @@ const userSchema = new mongoose.Schema({
   email: {
     type: String,
     unique: true,
-    required: true
+    required: true,
   },
   password: {
     type: String,
     unique: true,
-    required: true
+    required: true,
   },
   token: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 userSchema.pre('save', function(next) {
@@ -39,14 +39,6 @@ userSchema.pre('save', function(next) {
     });
   });
 });
-
-userSchema.methods.comparePassword = function(candidatePassword, cb) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) return (err);
-
-    return isMatch;
-  });
-};
 
 const User = mongoose.model('User', userSchema);
 
